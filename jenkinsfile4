@@ -18,14 +18,6 @@ pipeline {
         }
    
        
-        stage("build & SonarQube analysis") {
-            agent any
-            steps {
-              withSonarQubeEnv('sonarQube') {
-                sh 'mvn clean package sonar:sonar'
-              }
-            }
-          }
 
     // Building Docker images
     stage('Building image') {
