@@ -3,9 +3,9 @@ pipeline {
     environment {
         mavenHome = tool 'myMaven4'
         PATH = "$mavenHome/bin:$PATH"
-        registry = "311301640590.dkr.ecr.us-east-2.amazonaws.com/mytrunk"
+        //registry = "311301640590.dkr.ecr.us-east-2.amazonaws.com/mytrunk"
         registryCredential = 'myAwsAuthenticationPluginLogins' 
-        dockerImage = ''
+        //dockerImage = ''
     }
    
     stages {
@@ -42,12 +42,19 @@ pipeline {
         }
       }
     }
-   
+    
+     stage('stop previous containers') {
+         steps {
+            sh 'docker ps -f name=mytrunk -q | xargs --no-run-if-empty docker container stop'
+            sh 'docker container ls -a -fname=mytrunk -q | xargs -r docker container rm'
+         }
+       }
+
     // Running Docker container, make sure port 8096 is opened in
     stage('Docker Run') {
      steps{
          script {
-            dockerImage.run("-p 7575:5000 --rm --name mytrunk-repoContainer")
+            dockerImage.run("-p 7575:5000 --rm --name mytrunk")
          }
       }
     }
