@@ -3,56 +3,51 @@ pipeline {
     environment {
         mavenHome = tool 'myMaven4'
         PATH = "$mavenHome/bin:$PATH"
-        registry = "311301640590.dkr.ecr.us-east-2.amazonaws.com/myawesome-repo"
-        //- update your credentials ID after creating credentials for connecting to Docker Hub
+        registry = "311301640590.dkr.ecr.us-east-2.amazonaws.com/mytrunk"
         registryCredential = 'myAwsAuthenticationPluginLogins' 
         dockerImage = ''
     }
    
     stages {
-        stage('Cloning Git') {
-            steps {
-             checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/agunuworld4/myPthoneDocker.git']]])
-            }
-
-        }
-   
+        stage('Checkout') {
+			steps {
+				echo "PATH - $PATH"
+				echo "BUILD_NUMBER - $env.BUILD_NUMBER"
+				echo "BUILD_ID - $env.BUILD_ID"
+				echo "JOB_NAME - $env.JOB_NAME"
+				echo "BUILD_TAG - $env.BUILD_TAG"
+				echo "BUILD_URL - $env.BUILD_URL"
+			}
+		}
        
+    stage('Build Docker Image') {
+			steps {
+				//"docker build -t 311301640590.dkr.ecr.us-east-2.amazonaws.com/mytrunk:$env.BUILD_TAG"
+				script {
+					dockerImage = docker.build("311301640590.dkr.ecr.us-east-2.amazonaws.com/mytrunk:${env.BUILD_TAG}")
+				}
 
-    // Building Docker images
-    stage('Building image') {
-      steps{
-        script {
-          dockerImage = docker.build registry
-            docker.build('myawesome-repo')
-        }
-      }
-    }
+			}
+		}
     
+
      // Uploading Docker images into Docker Hub
     stage('Upload Image to ECR') {
      steps{   
          script {
             docker.withRegistry( 'https://311301640590.dkr.ecr.us-east-2.amazonaws.com', "ecr:us-east-2:$registryCredential" ) {
-            docker.image("myawesome-repo"). push('latest')
+              dockerImage.push();
+						dockerImage.push('latest');
             }
         }
       }
     }
    
-     // Stopping Docker containers for cleaner Docker run
-     stage('stop previous containers') {
-         steps {
-            sh 'docker ps -f name=myawesome-repoContainer -q | xargs --no-run-if-empty docker container stop'
-            sh 'docker container ls -a -fname=myawesome-repoContainer -q | xargs -r docker container rm'
-         }
-       }
-     
     // Running Docker container, make sure port 8096 is opened in
     stage('Docker Run') {
      steps{
          script {
-            dockerImage.run("-p 7575:5000 --rm --name myawesome-repoContainer")
+            dockerImage.run("-p 7575:5000 --rm --name mytrunk-repoContainer")
          }
       }
     }
