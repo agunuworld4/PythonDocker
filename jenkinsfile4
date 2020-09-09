@@ -3,9 +3,7 @@ pipeline {
     environment {
         mavenHome = tool 'myMaven4'
         PATH = "$mavenHome/bin:$PATH"
-        //registry = "311301640590.dkr.ecr.us-east-2.amazonaws.com/mytrunk"
-        registryCredential = 'myAwsAuthenticationPluginLogins' 
-        //dockerImage = ''
+        registryCredential = 'myAwsAuthenticationPluginLogins'
     }
    
     stages {
@@ -13,24 +11,18 @@ pipeline {
 			steps {
 				echo "PATH - $PATH"
 				echo "BUILD_NUMBER - $env.BUILD_NUMBER"
-				echo "BUILD_ID - $env.BUILD_ID"
-				echo "JOB_NAME - $env.JOB_NAME"
 				echo "BUILD_TAG - $env.BUILD_TAG"
 				echo "BUILD_URL - $env.BUILD_URL"
 			}
 		}
-       
-    stage('Build Docker Image') {
-			steps {
-				//"docker build -t 311301640590.dkr.ecr.us-east-2.amazonaws.com/mytrunk:$env.BUILD_TAG"
-				script {
-					dockerImage = docker.build("311301640590.dkr.ecr.us-east-2.amazonaws.com/mytrunk:${env.BUILD_TAG}")
-				}
+        stages {
+         stage( 'Build Docker Image'){
+             steps{
+                 sh "docker build . -t 311301640590.dkr.ecr.us-east-2.amazonaws.com/mytrunk:${env.BUILD_TAG}"
+             }
+         }
 
-			}
-		}
     
-
      // Uploading Docker images into Docker Hub
     stage('Upload Image to ECR') {
      steps{   
