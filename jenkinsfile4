@@ -36,8 +36,8 @@ pipeline {
      steps{   
          script {
             docker.withRegistry( 'https://311301640590.dkr.ecr.us-east-2.amazonaws.com', "ecr:us-east-2:$registryCredential" ) {
-              dockerImage.push();
-						dockerImage.push('latest');
+             // dockerImage.push();dockerImage.push('latest');
+             sh "docker push 311301640590.dkr.ecr.us-east-2.amazonaws.com/mytrunk:${env.BUILD_TAG} "
             }
         }
       }
