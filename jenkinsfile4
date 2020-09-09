@@ -31,23 +31,22 @@ pipeline {
         }
       }
     }
-    
+
     stage('stop previous containers') {
          steps {
-            sh 'docker ps -f name=mytrunk-repoContainer -q | xargs --no-run-if-empty docker container stop'
-            sh 'docker container ls -a -fname=mytrunk-repoContainer -q | xargs -r docker container rm'
+            sh 'docker ps -f name=mytrunkContainer -q | xargs --no-run-if-empty docker container stop'
+            sh 'docker container ls -a -fname=mytrunkContainer -q | xargs -r docker container rm'
          }
        }
-
-    
-
+      
     stage('Docker Run') {
      steps{
          script {
-            dockerImage.run("-p 7575:5000 --rm --name mytrunk-repoContainer")
-         }
+                sh 'docker run -d -p 8096:5000 --rm --name mytrunkContainer 311301640590.dkr.ecr.us-east-2.amazonaws.com/mytrunk:${env.BUILD_TAG}'
+            }
       }
     }
+    
 }
 
   }
