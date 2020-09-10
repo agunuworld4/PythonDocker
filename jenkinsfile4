@@ -5,6 +5,7 @@ pipeline {
         PATH = "$mavenHome/bin:$PATH"
         registryCredential = 'myAwsAuthenticationPluginLogins'
         DOCKER_TAG = getDockerTag()
+        IMAGE_URL_WITH_TAG = "311301640590.dkr.ecr.us-east-2.amazonaws.com/mytrunk:${DOCKER_TAG}"
     }
    
     stages {
@@ -25,14 +26,30 @@ pipeline {
      steps{   
          script {
             docker.withRegistry( 'https://311301640590.dkr.ecr.us-east-2.amazonaws.com', "ecr:us-east-2:$registryCredential" ) {
-             // dockerImage.push();dockerImage.push('latest');
-             sh "docker push 311301640590.dkr.ecr.us-east-2.amazonaws.com/mytrunk:${DOCKER_TAG} "
+              sh "docker push ${IMAGE_URL_WITH_TAG}"
             }
         }
       }
     }
 
+    stage('stop previous containers') {
+         steps {
+            sh 'docker ps -f name=mytrunkContainer -q | xargs --no-run-if-empty docker container stop'
+            sh 'docker container ls -a -fname=mytrunkContainer -q | xargs -r docker container rm'
+         }
+       }
+      
+    stage('Docker Run') {
+     steps{
+         script {
+                sh 'docker run -d -p 8096:5000 --rm --name mytrunkContainer 311301640590.dkr.ecr.us-east-2.amazonaws.com/mytrunk:${DOCKER_TAG}'
+            }
+      }
+    }
     
+}
+
+  }
 
 def getDockerTag(){
     def tag  = sh script: 'git rev-parse HEAD', returnStdout: true
