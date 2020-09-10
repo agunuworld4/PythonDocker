@@ -45,7 +45,7 @@ pipeline
 
         stage ('Dev Notification')  {
             steps{
-            slackSend(channel:'automationeksdeploy', message: "Codes On Dev Env Waiting for Dev Aprove, here is the info -  Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
+            slackSend(channel:'automationeksdeploy', message: "Codes On Dev Env Waiting for Dev Manager Aprover, here is the info -  Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
             }
            }
             
