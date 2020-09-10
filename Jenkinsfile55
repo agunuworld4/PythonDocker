@@ -50,6 +50,32 @@ pipeline
            }
 
 
+            stage ('DEV Approve')  {
+                steps{
+                echo "Taking approval from DEV Manager"     
+                 timeout(time: 7, unit: 'DAYS') {
+                input message: 'Do you want to deploy?', submitter: 'admin'
+                    }
+                 }
+                }
+
+         stage ('Slack notification')  {
+            steps{
+            slackSend(channel:'automationeksdeploy', message: "Code Is Available For QA Testing, here is the info -  Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
+            }
+           }
+
+
+        stage ('QA Approve')  {
+            steps{
+             echo "Taking approval from QA manager"
+              timeout(time: 7, unit: 'DAYS') {
+              input message: 'Do you want to proceed to PROD?', submitter: 'admin,manager_userid'
+                }
+               }
+            }
+
+
        stage('Deploy To Kubernetes'){
            steps{
                //sh "chmod +x changeTag.sh"
