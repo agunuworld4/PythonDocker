@@ -1,10 +1,8 @@
 pipeline
 {
-    options
-    {
-        buildDiscarder(logRotator(numToKeepStr: '3'))
-    }
+    
     agent any
+
     environment 
     {
         VERSION = "${BUILD_NUMBER}"
@@ -13,10 +11,11 @@ pipeline
         ECRURL = 'http://311301640590.dkr.ecr.us-east-2.amazonaws.com/mytrunk'
         ECRCRED = 'ecr:us-east-2:myAwsAuthenticationPluginLogins'
     }
+
     stages
     {
        
-        stage('Docker build')
+        stage('Build Docker Image')
         {
             steps
             {
@@ -27,7 +26,8 @@ pipeline
                 }
             }
         }
-        stage('Docker push')
+
+        stage('Push Image To ECR')
         {
             steps
             {
@@ -41,6 +41,25 @@ pipeline
                 }
             }
         }
+
+      // Stopping Docker containers for cleaner Docker run
+     stage('stop previous containers') {
+         steps {
+            sh 'docker ps -f name=PythonContainer -q | xargs --no-run-if-empty docker container stop'
+            sh 'docker container ls -a -fname=PythonContainer -q | xargs -r docker container rm'
+         }
+       }
+     
+    // Running Docker container, make sure port 8096 is opened in
+    stage('Docker Run') {
+     steps{
+         script {
+            dockerImage.run("-p 85:80 --rm --name PythonContainer")
+         }
+      }
+    }   
+
+
     }
     
     post
