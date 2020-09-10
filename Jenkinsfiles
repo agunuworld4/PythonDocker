@@ -19,7 +19,7 @@ pipeline {
       steps{
         script {
           dockerImage = docker.build registry
-            docker.build('myphpapp')
+            docker.build('mytrunk')
         }
       }
     }
@@ -29,7 +29,7 @@ pipeline {
      steps{   
          script {
             docker.withRegistry( 'https://311301640590.dkr.ecr.us-east-2.amazonaws.com', "ecr:us-east-2:$registryCredential" ) {
-            docker.image("myphpapp"). push('latest')
+            docker.image("mytrunk"). push('latest')
             }
         }
       }
@@ -38,8 +38,8 @@ pipeline {
      // Stopping Docker containers for cleaner Docker run
      stage('stop previous containers') {
          steps {
-            sh 'docker ps -f name=mypythonContainer -q | xargs --no-run-if-empty docker container stop'
-            sh 'docker container ls -a -fname=mypythonContainer -q | xargs -r docker container rm'
+            sh 'docker ps -f name=mypythonContainer4 -q | xargs --no-run-if-empty docker container stop'
+            sh 'docker container ls -a -fname=mypythonContainer4 -q | xargs -r docker container rm'
          }
        }
      
@@ -47,7 +47,7 @@ pipeline {
     stage('Docker Run') {
      steps{
          script {
-            dockerImage.run("-p 8096:5000 --rm --name mypythonContainer")
+            dockerImage.run("-p 8090:5000 --rm --name mypythonContainer4")
          }
       }
     }
