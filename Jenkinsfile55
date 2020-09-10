@@ -10,6 +10,7 @@ pipeline
         IMAGE = "$PROJECT:$VERSION"
         ECRURL = 'http://311301640590.dkr.ecr.us-east-2.amazonaws.com/mytrunk'
         ECRCRED = 'ecr:us-east-2:myAwsAuthenticationPluginLogins'
+        dockerImage = ''
     }
 
     stages
