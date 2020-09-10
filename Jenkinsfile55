@@ -15,13 +15,24 @@ pipeline
     stages
     {
        
+       stage('Checkout') {
+			steps {
+				echo "PATH - $PATH"
+				echo "BUILD_NUMBER - $env.BUILD_NUMBER"
+				echo "BUILD_ID - $env.BUILD_ID"
+				echo "JOB_NAME - $env.JOB_NAME"
+				echo "BUILD_TAG - $env.BUILD_TAG"
+				echo "BUILD_URL - $env.BUILD_URL"
+			}
+		}
+
+
         stage('Build Docker Image')
         {
             steps
             {
                 script
                 {
-                    //pipelines/TAP_docker_image_build_push_ecr"
                     docker.build("$IMAGE")  
                 }
             }
@@ -41,6 +52,14 @@ pipeline
                 }
             }
         }
+
+
+        stage ('Slack notification')  {
+            steps{
+            slackSend(channel:'automationeksdeploy', message: "Job is successful, here is the info -  Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
+            }
+           }
+
 
        stage('Deploy To Kubernetes'){
            steps{
@@ -64,7 +83,7 @@ pipeline
   } 
 
 
-def getDockerTag(){
+def ${DOCKER_TAG}{
     def tag  = sh script: 'git rev-parse HEAD', returnStdout: true
     return tag
 }
