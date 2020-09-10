@@ -21,7 +21,7 @@ pipeline
             {
                 script 
                 {
-                    // calculate GIT lastest commit short-hash
+                    // calculate GIT lastest commit short-hashgg
                     gitCommitHash = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
                     shortCommitHash = gitCommitHash.take(7)
                     // calculate a sample version tag
