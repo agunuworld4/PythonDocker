@@ -8,8 +8,8 @@ pipeline
     environment 
     {
         VERSION = 'latest'
-        PROJECT = 'trunk'
-        IMAGE = 'trunk:latest'
+        PROJECT = 'mytrunk'
+        IMAGE = 'mytrunk:latest'
         ECRURL = 'http://311301640590.dkr.ecr.us-east-2.amazonaws.com'
         ECRCRED = 'myAwsAuthenticationPluginLogins'
     }
