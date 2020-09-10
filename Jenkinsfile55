@@ -10,10 +10,10 @@ pipeline
         IMAGE = "$PROJECT:$VERSION"
         ECRURL = 'http://311301640590.dkr.ecr.us-east-2.amazonaws.com/mytrunk'
         ECRCRED = 'ecr:us-east-2:myAwsAuthenticationPluginLogins'
-    }
+        }
 
     stages
-    {
+           {
        
 
         stage('Build Docker Image')
@@ -43,7 +43,7 @@ pipeline
         }
 
 
-        stage ('Slack notification')  {
+        stage ('Image Build Successfully')  {
             steps{
             slackSend(channel:'automationeksdeploy', message: "Image Build And Pushed To ECR, here is the info -  Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
             }
