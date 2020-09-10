@@ -15,23 +15,7 @@ pipeline
     }
     stages
     {
-        stage('Build preparations')
-        {
-            steps
-            {
-                script 
-                {
-                    // calculate GIT lastest commit short-hashgg
-                    gitCommitHash = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
-                    shortCommitHash = gitCommitHash.take(7)
-                    // calculate a sample version tag
-                    VERSION = shortCommitHash
-                    // set the build display name
-                    currentBuild.displayName = "#${BUILD_NUMBER}-${VERSION}"
-                    IMAGE = "$PROJECT:$VERSION"
-                }
-            }
-        }
+       
         stage('Docker build')
         {
             steps
@@ -49,9 +33,7 @@ pipeline
             {
                 script
                 {
-                    // login to ECR - for now it seems that that the ECR Jenkins plugin is not performing the login as expected. I hope it will in the future.
-                    sh("eval \$(aws ecr get-login --no-include-email | sed 's|https://||')")
-                    // Push the Docker image to ECR
+                
                     docker.withRegistry(ECRURL, ECRCRED)
                     {
                         docker.image(IMAGE).push()
