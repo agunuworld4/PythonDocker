@@ -7,7 +7,7 @@ pipeline
     agent any
     environment 
     {
-        VERSION = "${BUILD_NUMBER}'
+        VERSION = "${BUILD_NUMBER}"
         PROJECT = 'mytrunk'
         IMAGE = "$PROJECT:$VERSION"
         ECRURL = 'http://311301640590.dkr.ecr.us-east-2.amazonaws.com/mytrunk'
