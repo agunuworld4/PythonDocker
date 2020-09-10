@@ -45,15 +45,15 @@ pipeline
 
         stage ('Slack notification')  {
             steps{
-            slackSend(channel:'automationeksdeploy', message: "Job is successful, here is the info -  Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
+            slackSend(channel:'automationeksdeploy', message: "Image Build And Pushed To ECR, here is the info -  Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
             }
            }
 
 
        stage('Deploy To Kubernetes'){
            steps{
-               sh "chmod +x changeTag.sh"
-               sh "./changeTag.sh ${DOCKER_TAG}"
+               //sh "chmod +x changeTag.sh"
+               //sh "./changeTag.sh ${DOCKER_TAG}"
                sshagent(['eksclimasternodes']) {
                sh "scp -o StrictHostKeyChecking=no services.yml node-app-pod.yml ec2-user@3.135.209.242:/home/ec2-user/"
                script{
